@@ -1,0 +1,35 @@
+version: '3.7'
+
+services:
+  reverse-proxy:
+    image: gannagp/reverse:30
+    ports:
+    - '80:80'
+    networks:
+      - backend
+    depends_on:
+      - web
+  web:
+    image: gannagp/django:30
+    volumes:
+      - .:/web_django
+    ports:
+      - '8080:8080'
+    depends_on:
+      - db
+    networks:
+      - backend
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: 'db_django'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    restart: always
+    volumes:
+      - ./db_django:/var/lib/mysql
+    networks:
+      - backend
+
+networks:
+  backend: null
