@@ -75,11 +75,12 @@ if [ `$ssh ls -d $inPath  2> /dev/null| wc -l` == 0  ]
     backupCompose
     echo "$(date --rfc-3339='ns'): ********* Run docker stack django *********"
     $ssh docker stack deploy -c$inPath/docker-compose.yml django
-    sleep 30
     echo "$(date --rfc-3339='ns'): ********* Apply migrations to database *********"
-    getContainerId
+    scp wait-for-mysql.sh $inServer:/$inPath
+    $ssh $inPath/wait-for-mysql.sh 192.168.100.19 db_django echo "Database is up!"
+    getContainerId        
     echo $containerId
-    sleep 60
+    echo "$(date --rfc-3339='ns'): ********* Apply migrations to database *********"
     $ssh docker exec -i $containerId python manage.py makemigrations
     $ssh docker exec -i $containerId python manage.py migrate
     $ssh docker service update --force django_web
@@ -95,8 +96,7 @@ else
     else
         echo "$(date --rfc-3339='ns'): ********* Started rollback *********"
         $ssh "cp $inPath/backup/$inVersion/docker-compose.yml $inPath/docker-compose.yml && \
-                docker stack deploy -c $inPath/backup/$inVersion/docker-compose.yml django_web
-            "
+                docker stack deploy -c $inPath/backup/$inVersion/docker-compose.yml django"
     fi
 fi
 
