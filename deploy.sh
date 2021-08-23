@@ -54,7 +54,7 @@ backupCompose(){
     echo "The old version is $oldVersion, new one is $inVersion"
     $ssh "mkdir -p $inPath/backup/$inVersion && \
                 cp $inPath/docker-compose.yml $inPath/backup/$inVersion && \
-                sed -i 's/$oldVersion/$inVersion/g' $inPath/docker-compose.yml
+                sed -i -e '/image/s/$oldVersion/$inVersion/g' $inPath/docker-compose.yml
     "
 }
 
