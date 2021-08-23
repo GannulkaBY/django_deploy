@@ -2,6 +2,11 @@
 
 Repository contains script to deploy Django image to the remote host and docker-compose to run the application.
 
+### Scripts
+
+- depoy.sh - to run deploy
+- rollback.sh - to rollback to the previous version
+
 ### Database
 MySQL. 
 Connection is set in web_django/settings.py
@@ -15,10 +20,11 @@ User.objects.create_superuser('admin', 'admin@myproject.com', 'password')
 ```
 ### Run
 
-Application is run by docker stack deploy. It runs 3 services
+Application is run by docker stack deploy -c docker-compose.yml django. 
+It runs 3 services
 ```bash
 ID                  NAME                   MODE                REPLICAS            IMAGE                PORTS
-mz9vptgjsx0v        django_db              replicated          1/1                 mysql:5.7            
+mz9vptgjsx0v        django_db              replicated          1/1                 mysql:5.7            *:3306->3306/tcp
 2g849f1ewav7        django_reverse-proxy   replicated          1/1                 gannagp/reverse:30   *:80->80/tcp
 vc9ipvowy1bm        django_web             replicated          1/1                 gannagp/django:30    *:8080->8080/tcp
 ```
